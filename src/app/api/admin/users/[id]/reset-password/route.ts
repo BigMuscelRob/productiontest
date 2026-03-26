@@ -13,8 +13,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     const { id } = await params;
 
-    // Generate random 8 character string for temporary password
-    const tempPassword = Math.random().toString(36).slice(-8);
+    const body = await req.json().catch(() => ({}));
+    const tempPassword = body.tempPassword?.trim();
+
+    if (!tempPassword || tempPassword.length < 3) {
+      return NextResponse.json(
+        { message: "Passwort muss mindestens 3 Zeichen lang sein." },
+        { status: 400 }
+      );
+    }
+    
     const hashedPassword = await bcrypt.hash(tempPassword, 12);
 
     await sql`

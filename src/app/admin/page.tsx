@@ -16,6 +16,8 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tempPasswordModal, setTempPasswordModal] = useState<{username: string, password: string} | null>(null);
+  const [resetPrompt, setResetPrompt] = useState<{ id: string; username: string } | null>(null);
+  const [customTempPassword, setCustomTempPassword] = useState("");
   const [resettingId, setResettingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -36,25 +38,36 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleResetPassword = async (id: string, username: string) => {
-    if (!confirm(`Soll das Passwort von ${username} wirklich zurückgesetzt werden?`)) return;
+  const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetPrompt || !customTempPassword) return;
     
+    const { id, username } = resetPrompt;
     setResettingId(id);
     try {
       const res = await fetch(`/api/admin/users/${id}/reset-password`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tempPassword: customTempPassword }),
       });
       const data = await res.json();
       
       if (!res.ok) throw new Error(data.message || "Fehler beim Zurücksetzen");
       
       setTempPasswordModal({ username, password: data.tempPassword });
+      setResetPrompt(null);
+      setCustomTempPassword("");
       fetchUsers(); // Refresh list to update mustChangePassword badge
     } catch (err: any) {
       alert(err.message || "Fehler beim Zurücksetzen des Passworts.");
     } finally {
       setResettingId(null);
     }
+  };
+
+  const openResetPrompt = (id: string, username: string) => {
+    setResetPrompt({ id, username });
+    setCustomTempPassword("");
   };
 
   const handleDeleteUser = async (id: string, username: string) => {
@@ -135,7 +148,7 @@ export default function AdminDashboardPage() {
                     <td className="py-4 px-6 text-right">
                       <div className="flex justify-end gap-2">
                         <button
-                          onClick={() => handleResetPassword(user.id, user.username)}
+                          onClick={() => openResetPrompt(user.id, user.username)}
                           disabled={resettingId === user.id || deletingId === user.id}
                           className="text-sm px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium transition-colors disabled:opacity-50"
                         >
@@ -163,7 +176,51 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Temporary Password Modal */}
+      {/* Custom Reset Password Prompt Modal */}
+      {resetPrompt && !tempPasswordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-stone-200 relative">
+            <button 
+              onClick={() => setResetPrompt(null)}
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 transition-colors"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            
+            <div className="text-center mb-6">
+              <span className="text-4xl inline-block mb-2">🔄</span>
+              <h2 className="text-xl font-bold text-stone-800">Passwort zurücksetzen</h2>
+              <p className="text-sm text-stone-500 mt-1">
+                Für Benutzer <strong>@{resetPrompt.username}</strong>
+              </p>
+            </div>
+            
+            <form onSubmit={handleResetPasswordSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5 text-left">
+                <label className="text-sm font-semibold text-stone-700 ml-1">Temporäres Passwort eingeben</label>
+                <input
+                  type="text"
+                  value={customTempPassword}
+                  onChange={(e) => setCustomTempPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all font-mono"
+                  placeholder="z.B. Tischtennis2026!"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={resettingId === resetPrompt.id || !customTempPassword}
+                className="w-full bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-orange-500/20 disabled:opacity-50 mt-2"
+              >
+                {resettingId === resetPrompt.id ? "Wird gespeichert..." : "Passwort setzen"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Temporary Password Display Modal */}
       {tempPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-stone-200">
