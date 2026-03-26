@@ -180,7 +180,7 @@ export default function HomePage() {
 
       {/* ── STATS STRIP ── */}
       <section
-        className="w-full max-w-4xl mx-auto mt-10 glass rounded-3xl px-8 py-6 grid grid-cols-3 gap-4 text-center"
+        className="w-full max-w-4xl mx-auto mt-10 glass rounded-3xl px-8 py-6 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 text-center"
         aria-label="Turnier Statistiken"
       >
         {[
