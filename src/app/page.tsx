@@ -26,20 +26,12 @@ export default function HomePage() {
         </h1>
 
         {/* Welcome text */}
-        <div className="text-lg sm:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed mb-10 space-y-4">
-          <p>
-            <strong>Willkommen beim Tischtennis-Turnier! 🏓</strong>
-          </p>
-          <p>
-            Ich bin Robin und habe dieses Event ins Leben gerufen, um uns über den Sport zu verbinden. 
-            Was als kleines Hobby-Projekt gestartet ist, soll vor allem eines: Spaß machen, 
-            coole Leute zusammenbringen und gleichzeitig für einen sportlichen Wettbewerb sorgen.
-          </p>
-          <p>
-            Ganz egal, welches Level du spielst – jeder kann mitmachen, spannende Matches bestreiten 
-            und sich vielleicht sogar bis ins große Finale durchkämpfen!
-          </p>
-        </div>
+        <p className="text-lg sm:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed mb-10">
+          Willkommen beim Tischtennis-Turnier 2026! Erlebe packende Matches, verfolge die 
+          Gruppenphase und fiebere beim Finale mit. Dieses Turnier ist ein reines Spaß-Projekt von Robin –
+          ganz nach dem Motto <strong>„Just for Fun“</strong>! Egal, ob Profi oder Anfänger: 
+          Melde dich an, lerne coole Leute kennen und zeig, was du an der Platte drauf hast!
+        </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-wrap gap-4 justify-center">
