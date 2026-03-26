@@ -27,6 +27,27 @@ const authConfig = {
         }
         return session;
       },
+      authorized({ auth, request: { nextUrl } }) {
+        const isLoggedIn = !!auth?.user;
+        const mustChangePassword = (auth?.user as any)?.mustChangePassword;
+        const isAdmin = (auth?.user as any)?.role === "admin";
+        
+        const isPasswortAendernRoute = nextUrl.pathname.startsWith('/passwort-aendern');
+        const isAdminRoute = nextUrl.pathname.startsWith('/admin');
+        const isLoginRoute = nextUrl.pathname === '/login';
+
+        // Force password change
+        if (isLoggedIn && mustChangePassword && !isPasswortAendernRoute && !isLoginRoute) {
+          return Response.redirect(new URL('/passwort-aendern', nextUrl));
+        }
+
+        // Prevent players from accessing admin routes
+        if (isAdminRoute && !isAdmin) {
+          return Response.redirect(new URL('/', nextUrl));
+        }
+
+        return true;
+      },
     },
     pages: {
       signIn: "/login",
