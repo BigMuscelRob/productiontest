@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT NOT NULL,
   role VARCHAR(10) NOT NULL DEFAULT 'player' CHECK (role IN ('admin', 'player')),
   must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
+  group_name VARCHAR(10) NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -19,3 +20,16 @@ CREATE TABLE IF NOT EXISTS users (
 --
 -- INSERT INTO users (name, username, password_hash, role)
 -- VALUES ('Administrator', 'admin', '$2b$12$YOUR_HASH_HERE', 'admin');
+
+CREATE TABLE IF NOT EXISTS matches (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  player1_id UUID REFERENCES users(id),
+  player2_id UUID REFERENCES users(id),
+  player1_score INT DEFAULT 0,
+  player2_score INT DEFAULT 0,
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed')),
+  scheduled_time TIMESTAMPTZ,
+  phase VARCHAR(50), -- e.g., 'achtelfinale', 'viertelfinale', 'halbfinale', 'finale'
+  bracket_position INT, -- order of the match in its phase
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

@@ -28,7 +28,12 @@ export default function Navbar() {
   const navLinks = [
     { href: "/", label: "Startseite" },
     { href: "/spieler", label: "Spieler" },
+    { href: "/turnier", label: "Turnier" },
   ];
+
+  if (status === "authenticated") {
+    navLinks.splice(1, 0, { href: "/uebersicht", label: "Übersicht" });
+  }
 
   if (status === "unauthenticated") {
     navLinks.push({ href: "/login", label: "Login" });
@@ -40,17 +45,15 @@ export default function Navbar() {
   }
 
   return (
-    <header 
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "pt-0 px-0" : "pt-4 px-4"
-      }`}
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-500 ease-in-out transform-gpu ${isScrolled ? "pt-0 px-0" : "pt-4 px-4"
+        }`}
     >
       <nav
-        className={`mx-auto flex items-center justify-between transition-all duration-300 ${
-          isScrolled 
-            ? "max-w-full px-6 lg:px-12 py-3 bg-white/70 backdrop-blur-xl border-b border-stone-200 shadow-sm" 
-            : "max-w-5xl px-6 py-3 glass rounded-2xl"
-        }`}
+        className={`mx-auto flex items-center justify-between transition-all duration-500 ease-in-out transform-gpu ${isScrolled
+          ? "max-w-full px-5 py-3 bg-white/90 backdrop-blur-2xl border-b border-stone-200/50 shadow-sm rounded-none"
+          : "max-w-5xl px-5 py-3 bg-white/90 md:bg-white/55 backdrop-blur-2xl border border-stone-200/50 shadow-lg rounded-2xl"
+          }`}
         aria-label="Hauptnavigation"
       >
         {/* Logo / Brand */}
@@ -62,9 +65,9 @@ export default function Navbar() {
           <Image
             src="/LogoTTT.png"
             alt="Tischtennis Uni Turnier Logo"
-            width={36}
-            height={36}
-            className="rounded-lg"
+            width={48}
+            height={48}
+            className="rounded-xl shadow-sm"
             priority
           />
           <span className="gradient-text font-extrabold tracking-tight hidden sm:inline">
@@ -81,11 +84,10 @@ export default function Navbar() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? "text-orange-600 font-semibold"
-                        : "text-stone-600 hover:text-orange-500"
-                    }`}
+                    className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
+                      ? "text-orange-600 font-semibold"
+                      : "text-stone-600 hover:text-orange-500"
+                      }`}
                     aria-current={isActive ? "page" : undefined}
                   >
                     {isActive && (
@@ -142,20 +144,19 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full mt-2 px-4 shadow-xl z-40">
-          <div className="glass-card rounded-2xl mx-auto p-4 flex flex-col gap-2">
-            <ul className="flex flex-col gap-1" role="list">
+        <div className="md:hidden absolute top-full left-0 w-full pt-2 px-4 shadow-2xl z-40">
+          <div className="bg-white/95 backdrop-blur-3xl border border-stone-200 shadow-2xl rounded-2xl mx-auto p-5 flex flex-col gap-2">
+            <ul className="flex flex-col gap-1.5" role="list">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className={`block w-full px-4 py-3 rounded-xl text-base font-medium transition-all ${
-                        isActive
-                          ? "bg-orange-50 text-orange-600 font-semibold"
-                          : "text-stone-600 hover:bg-stone-50 hover:text-orange-500"
-                      }`}
+                      className={`block w-full px-4 py-3 rounded-xl text-base font-medium transition-all ${isActive
+                        ? "bg-orange-50 text-orange-600 font-semibold"
+                        : "text-stone-600 hover:bg-stone-50 hover:text-orange-500"
+                        }`}
                     >
                       {link.label}
                     </Link>

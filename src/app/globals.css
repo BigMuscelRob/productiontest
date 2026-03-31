@@ -86,3 +86,21 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+@layer utilities {
+  .branch-top-left::before {
+    content: ''; position: absolute; right: 0; top: 50%; bottom: -1rem; width: 1.5rem;
+    border-top: 2px solid #fb923c; border-right: 2px solid #fb923c; border-top-right-radius: 0.5rem; z-index: -1;
+  }
+  .branch-bot-left::before {
+    content: ''; position: absolute; right: 0; bottom: 50%; top: -1rem; width: 1.5rem;
+    border-bottom: 2px solid #fb923c; border-right: 2px solid #fb923c; border-bottom-right-radius: 0.5rem; z-index: -1;
+  }
+  .branch-top-right::before {
+    content: ''; position: absolute; left: 0; top: 50%; bottom: -1rem; width: 1.5rem;
+    border-top: 2px solid #fb923c; border-left: 2px solid #fb923c; border-top-left-radius: 0.5rem; z-index: -1;
+  }
+  .branch-bot-right::before {
+    content: ''; position: absolute; left: 0; bottom: 50%; top: -1rem; width: 1.5rem;
+    border-bottom: 2px solid #fb923c; border-left: 2px solid #fb923c; border-bottom-left-radius: 0.5rem; z-index: -1;
+  }
+}

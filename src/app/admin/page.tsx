@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface User {
   id: string;
@@ -107,6 +108,12 @@ export default function AdminDashboardPage() {
                 Verwalte alle registrierten Spieler und Administratoren.
               </p>
             </div>
+            <Link 
+               href="/admin/turnier" 
+               className="inline-flex items-center gap-2 px-6 py-3 bg-stone-800 text-white font-bold rounded-xl shadow-lg hover:bg-stone-900 transition-all"
+            >
+              <span>🏆</span> Turnier-Verwaltung
+            </Link>
           </div>
 
           {error && <div className="text-red-500 mb-4">{error}</div>}

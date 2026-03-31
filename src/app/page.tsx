@@ -1,6 +1,27 @@
 import Link from "next/link";
+import { sql } from "@/lib/db";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  // Fetch real statistics
+  let playerCount = "0";
+  let groupCount = "0";
+  let matchCount = "0";
+
+  try {
+    const playersRes = await sql`SELECT count(*) FROM users WHERE role = 'player'`;
+    playerCount = playersRes[0]?.count?.toString() || "0";
+
+    const groupsRes = await sql`SELECT count(DISTINCT group_name) FROM users WHERE group_name IS NOT NULL`;
+    groupCount = groupsRes[0]?.count?.toString() || "0";
+
+    const matchesRes = await sql`SELECT count(*) FROM matches`;
+    matchCount = matchesRes[0]?.count?.toString() || "0";
+  } catch (error) {
+    console.error("Failed to load stats for landing page", error);
+  }
+
   return (
     <main className="flex flex-col items-center px-4 pb-20">
       {/* ── HERO ── */}
@@ -26,12 +47,43 @@ export default function HomePage() {
         </h1>
 
         {/* Welcome text */}
-        <p className="text-lg sm:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed mb-10">
-          Willkommen beim Tischtennis-Turnier 2026! Erlebe packende Matches, verfolge die 
-          Gruppenphase und fiebere beim Finale mit. Dieses Turnier ist ein reines Spaß-Projekt von Robin –
-          ganz nach dem Motto <strong>„Just for Fun“</strong>! Egal, ob Profi oder Anfänger: 
-          Melde dich an, lerne coole Leute kennen und zeig, was du an der Platte drauf hast!
-        </p>
+        <div className="text-lg text-stone-600 max-w-3xl mx-auto leading-relaxed mb-10 space-y-5">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-800 mb-6 tracking-tight">
+            WT4A Tischtennis Championship <br className="hidden sm:block" />
+            <span className="text-orange-600">Ruhm, Ehre und ein Kasten Bier</span>
+          </h2>
+          
+          <p>
+            Es ist soweit: Das WT4A Tischtennis Turnier steht an, das wahrscheinlich sportlichste Highlight unseres Kurses. Hier treffen sich Wirtschaftsinformatiker, um zu beweisen, dass sie nicht nur Excel-Tabellen, Datenbanken und PowerPoints beherrschen, sondern angeblich auch Sport können (ein sehr gewagtes Gerücht).
+          </p>
+          
+          <p>
+            Egal ob Profi mit Topspin, Hobbyspieler oder jemand, der normalerweise nur Maus und Tastatur bewegt, jeder ist willkommen. Gespielt wird mit maximalem Ehrgeiz, fragwürdiger Technik und sehr viel Trash Talk. <span className="italic">Fair Play ist erwünscht, wird aber nicht erwartet.</span>
+          </p>
+          
+          <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200/50 rounded-2xl p-6 sm:px-8 my-8 text-left shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-orange-500"></div>
+            <p className="font-bold text-orange-900 mb-2 flex items-center gap-2">
+              <span className="text-xl">🍻</span> Und jetzt zum wichtigsten Teil:
+            </p>
+            <p className="text-orange-950 font-medium">
+              Der Gewinner bekommt einen Kasten Bier seiner Wahl &rarr; Augustiner, Tegernseer, etc.<br/>
+              <span className="italic text-orange-700 text-sm font-normal mt-1 block">Öttinger ist selbstverständlich ausgeschlossen.</span>
+            </p>
+            <p className="font-bold text-orange-800 mt-4 text-sm uppercase tracking-wider">
+              Es geht also nicht nur um Ruhm und Ehre, sondern um etwas, das wirklich zählt.
+            </p>
+          </div>
+          
+          <p>
+            Also trainiert eure Aufschläge, poliert eure Schläger und macht euch bereit für epische Ballwechsel, knappe Matches und absolute Glanzleistungen.
+          </p>
+          
+          <p className="font-bold text-stone-800 text-xl md:text-2xl mt-8">
+            Wir suchen den Tischtennis Champion 2026.<br/>
+            <span className="gradient-text">Möge der/die Beste gewinnen!</span>
+          </p>
+        </div>
 
         {/* CTA Buttons */}
         <div className="flex flex-wrap gap-4 justify-center">
@@ -79,10 +131,10 @@ export default function HomePage() {
               aria-hidden="true"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-                <rect x="9" y="3" width="6" height="4" rx="1"/>
-                <line x1="9" y1="12" x2="15" y2="12"/>
-                <line x1="9" y1="16" x2="13" y2="16"/>
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                <rect x="9" y="3" width="6" height="4" rx="1" />
+                <line x1="9" y1="12" x2="15" y2="12" />
+                <line x1="9" y1="16" x2="13" y2="16" />
               </svg>
             </span>
             <h2 id="rules-heading" className="text-xl font-bold text-stone-800">
@@ -93,7 +145,7 @@ export default function HomePage() {
           {/* Key rules – icon rows */}
           <div className="flex flex-col gap-2">
             {[
-              { icon: "🏓", label: "Modus", value: "Best of 3 Sätze" },
+              { icon: "🏓", label: "Modus", value: "Best of 5 Sätze" },
               { icon: "🔢", label: "Punkte/Satz", value: "11 Punkte" },
               { icon: "⚖️", label: "Gleichstand", value: "Satzdifferenz entscheidet" },
             ].map(({ icon, label, value }) => (
@@ -135,17 +187,17 @@ export default function HomePage() {
             >
               {/* Inline bracket SVG logo */}
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="2" y1="5" x2="7" y2="5"/>
-                <line x1="2" y1="11" x2="7" y2="11"/>
-                <line x1="7" y1="5" x2="7" y2="11"/>
-                <line x1="7" y1="8" x2="12" y2="8"/>
-                <line x1="2" y1="17" x2="7" y2="17"/>
-                <line x1="2" y1="23" x2="7" y2="23"/>
-                <line x1="7" y1="17" x2="7" y2="23"/>
-                <line x1="7" y1="20" x2="12" y2="20"/>
-                <line x1="12" y1="8" x2="12" y2="20"/>
-                <line x1="12" y1="14" x2="17" y2="14"/>
-                <circle cx="19" cy="14" r="2" fill="#ea580c" stroke="none"/>
+                <line x1="2" y1="5" x2="7" y2="5" />
+                <line x1="2" y1="11" x2="7" y2="11" />
+                <line x1="7" y1="5" x2="7" y2="11" />
+                <line x1="7" y1="8" x2="12" y2="8" />
+                <line x1="2" y1="17" x2="7" y2="17" />
+                <line x1="2" y1="23" x2="7" y2="23" />
+                <line x1="7" y1="17" x2="7" y2="23" />
+                <line x1="7" y1="20" x2="12" y2="20" />
+                <line x1="12" y1="8" x2="12" y2="20" />
+                <line x1="12" y1="14" x2="17" y2="14" />
+                <circle cx="19" cy="14" r="2" fill="#ea580c" stroke="none" />
               </svg>
             </span>
             <h2 id="format-heading" className="text-xl font-bold text-stone-800">
@@ -170,7 +222,7 @@ export default function HomePage() {
                 </span>
                 {i < arr.length - 1 && (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 5v14M6 13l6 6 6-6"/>
+                    <path d="M12 5v14M6 13l6 6 6-6" />
                   </svg>
                 )}
               </div>
@@ -185,9 +237,9 @@ export default function HomePage() {
         aria-label="Turnier Statistiken"
       >
         {[
-          { value: "32", label: "Spieler", icon: "👥" },
-          { value: "8", label: "Gruppen", icon: "🗂️" },
-          { value: "1", label: "Champion", icon: "🥇" },
+          { value: playerCount, label: "Spieler", icon: "👥" },
+          { value: groupCount, label: "Gruppen", icon: "🗂️" },
+          { value: matchCount, label: "Matches", icon: "🏓" },
         ].map(({ value, label, icon }) => (
           <div key={label} className="flex flex-col items-center gap-1">
             <span className="text-2xl" aria-hidden="true">{icon}</span>
