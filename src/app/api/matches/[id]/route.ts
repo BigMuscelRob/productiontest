@@ -44,6 +44,18 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       return NextResponse.json({ message: "Ungültige Daten" }, { status: 400 });
     }
 
+    const matchCheck = await sql`SELECT player1_id, player2_id FROM matches WHERE id = ${matchId}`;
+    if (matchCheck.length === 0) {
+      return NextResponse.json({ message: "Match nicht gefunden" }, { status: 404 });
+    }
+
+    const isParticipant = session.user.id === matchCheck[0].player1_id || session.user.id === matchCheck[0].player2_id;
+    const isAdmin = session.user.role === 'admin';
+
+    if (!isParticipant && !isAdmin) {
+      return NextResponse.json({ message: "Du bist nur berechtigt, eigene Matches zu speichern." }, { status: 403 });
+    }
+
     const updatedMatch = await sql`
       UPDATE matches
       SET status = 'completed', player1_score = ${p1Sets}, player2_score = ${p2Sets}
